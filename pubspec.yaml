@@ -1,0 +1,21 @@
+name: limbo_ui_flutter
+description: "Reusable UI component library extracted from the Limbo e-commerce app."
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: ^3.2.3
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_fonts: ^6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
