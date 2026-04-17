@@ -11,7 +11,7 @@ repositories, and state management.
 - **Framework:** Flutter (>=3.0.0)
 - **Language:** Dart (^3.2.3)
 - **Key Dependencies:**
-  - `google_fonts`: Typography using Poppins, Manrope, and Mulish.
+  - Minimal UI dependencies
 - **Design Tokens:** `LimboColors` and `LimboTextStyles` (no external config system needed).
 
 ---
@@ -55,13 +55,13 @@ color: Colors.teal
 
 ### 2. Text Styles (`LimboTextStyles`)
 Pre-defined styles for common use cases. For typography beyond these, use
-`GoogleFonts` with explicit font names — never use default `TextStyle` for
+explicit font names — never use default `TextStyle` for
 user-visible text without a font family.
 
 ```dart
 // ✅ Correct
 style: LimboTextStyles.button
-style: GoogleFonts.poppins(fontSize: 14, color: LimboColors.black)
+style: TextStyle(fontFamily: 'Poppins', fontSize: 14, color: LimboColors.black)
 
 // ❌ Wrong
 style: TextStyle(fontSize: 14)   // no font family = system default
@@ -163,7 +163,7 @@ flutter test
 | **Clean Architecture** | Keep validation logic in `LimboValidators`, UI in `components/`. No business logic inside widgets. |
 | **SOLID** | Favor composition over inheritance. Widgets receive everything they need via constructor. |
 | **Colors** | Always use `LimboColors.*`. No hardcoded `Color(0x...)` values outside `limbo_colors.dart`. |
-| **Fonts** | Use `GoogleFonts` or `LimboTextStyles`. Never rely on system default font. |
+| **Fonts** | Use `LimboTextStyles` or set `fontFamily`. Never rely on system default font. |
 | **Validation** | Always use `LimboValidators`. Never write inline validators in widget files. |
 | **Async Actions** | Always use `LimboButton` with `isLoading` for async operations. |
 | **Routing** | Use `onTap` / `VoidCallback` parameters. Never import `go_router` or any router in this package. |

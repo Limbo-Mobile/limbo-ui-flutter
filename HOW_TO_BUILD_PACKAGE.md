@@ -5,7 +5,7 @@
 
 ## What is a Flutter Package?
 
-A **Flutter package** is a reusable library of widgets/logic with no `main.dart` entry point. It is consumed by apps via `pubspec.yaml` dependency, exactly like `google_fonts` or `flutter_bloc`.
+A **Flutter package** is a reusable library of widgets/logic with no `main.dart` entry point. It is consumed by apps via `pubspec.yaml` dependency, exactly like `provider` or `flutter_bloc`.
 
 > [!NOTE]
 > This guide documents every command and decision used to build `limbo-ui-flutter` — a widget library extracted from the Limbo e-commerce app, structured identically to `base-ui-flutter`.
@@ -95,7 +95,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  google_fonts: ^6.1.0   # only external dependency needed
 
 dev_dependencies:
   flutter_test:
@@ -161,7 +160,7 @@ class LimboTextStyles {
 ## Step 6 — Write Components
 
 Each component file follows the pattern:
-1. Import only `flutter`, `google_fonts`, and internal package imports
+1. Import only `flutter` and internal package imports
 2. Prefix class names with `Limbo` to avoid conflicts
 3. Add a doc comment with a usage example
 
@@ -306,7 +305,7 @@ LimboButton(
 |---|---|---|
 | **Domain** | Focus / AI assistant app | Limbo e-commerce app |
 | **Prefix** | `Focus` | `Limbo` |
-| **Fonts** | Montserrat, Mulish, GoogleSans (bundled) | Google Fonts via package |
+| **Fonts** | Montserrat, Mulish, GoogleSans (bundled) | Configurable via LimboConfiguration |
 | **Config system** | `BaseUIConfiguration` singleton | Direct `LimboColors` / `LimboTextStyles` |
 | **Components** | Chat, Voice, MFA, Trip | ItemCard, Filter, Search, Category |
 

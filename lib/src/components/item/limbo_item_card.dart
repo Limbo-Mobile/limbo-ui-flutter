@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:limbo_ui_flutter/src/core/limbo_configuration.dart';
 
 /// Data model for a product displayed in [LimboItemCard].
 class LimboItemData {
@@ -81,7 +81,8 @@ class LimboItemCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Text(
                 item.storeName.toUpperCase(),
-                style: GoogleFonts.manrope(
+                style: TextStyle(
+                  fontFamily: LimboConfiguration().fontFamily,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
@@ -97,7 +98,8 @@ class LimboItemCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Text(
                 item.productName,
-                style: GoogleFonts.manrope(
+                style: TextStyle(
+                  fontFamily: LimboConfiguration().fontFamily,
                   fontSize: 14,
                   color: const Color(0xFF666666),
                 ),
@@ -117,7 +119,8 @@ class LimboItemCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Text(
                 'Vendido por ${item.storeName}',
-                style: GoogleFonts.manrope(
+                style: TextStyle(
+                  fontFamily: LimboConfiguration().fontFamily,
                   fontSize: 12,
                   color: const Color(0xFF999999),
                 ),
@@ -199,7 +202,8 @@ class _PriceDisplay extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Text(
         'S/.${price.toStringAsFixed(2)}',
-        style: GoogleFonts.manrope(
+        style: TextStyle(
+                  fontFamily: LimboConfiguration().fontFamily,
           fontSize: 16,
           fontWeight: FontWeight.bold,
           color: const Color(0xFFE60000), // Figma red
@@ -224,7 +228,8 @@ class _DiscountedPriceDisplay extends StatelessWidget {
         children: [
           Text(
             'S/.${discounted.toStringAsFixed(2)}',
-            style: GoogleFonts.manrope(
+            style: TextStyle(
+                  fontFamily: LimboConfiguration().fontFamily,
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: const Color(0xFFE60000),
@@ -233,7 +238,8 @@ class _DiscountedPriceDisplay extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             'S/.${item.price.toStringAsFixed(2)}',
-            style: GoogleFonts.manrope(
+            style: TextStyle(
+                  fontFamily: LimboConfiguration().fontFamily,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF999999),
