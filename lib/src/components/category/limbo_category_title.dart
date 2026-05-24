@@ -24,7 +24,7 @@ class LimboCategoryTitle extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(category, style: LimboTypography.categoryTitle),
-        const Divider(color: LimboColors.primary, thickness: 1.5),
+        Divider(color: LimboColors.primary, thickness: 1.5),
       ],
     );
   }

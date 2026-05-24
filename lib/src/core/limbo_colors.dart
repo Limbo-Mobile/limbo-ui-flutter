@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:limbo_ui_flutter/src/core/limbo_configuration.dart';
 
 /// Limbo 2024 Design System — Color Palette
 ///
@@ -18,73 +19,73 @@ class LimboColors {
 
   /// Main brand teal. Used on primary buttons, active tabs, focused borders,
   /// selected color indicators, and all interactive highlights.
-  static const Color primary = Color(0xFF19B4B3);
+  static Color get primary => LimboConfiguration().primaryColor;
 
   /// Darker teal. Used as pressed/hover state for [primary].
-  static const Color secondary = Color(0xFF148584);
+  static Color get secondary => LimboConfiguration().secondaryColor;
 
   // ── Backgrounds ───────────────────────────────────────────────────────────
 
   /// Main app background (white).
-  static const Color backgroundApp = Color(0xFFFFFFFF);
+  static Color get backgroundApp => LimboConfiguration().backgroundApp;
 
   /// Card / surface background. Used on text fields, list tiles, and
   /// chip containers.
-  static const Color backgroundObject = Color(0xFFF6F6F6);
+  static Color get backgroundObject => LimboConfiguration().backgroundObject;
 
   /// Border colour for cards and surfaces.
-  static const Color backgroundObjectBorder = Color(0xFFE8E8E8);
+  static Color get backgroundObjectBorder => LimboConfiguration().backgroundObjectBorder;
 
   // ── Text ──────────────────────────────────────────────────────────────────
 
   /// Primary text — headlines, labels, product names.
-  static const Color textPrimary = Color(0xFF000000);
+  static Color get textPrimary => LimboConfiguration().textPrimary;
 
   /// Secondary text — subtitles, metadata, "Vendido por" text.
-  static const Color textSecondary = Color(0xFF676767);
+  static Color get textSecondary => LimboConfiguration().textSecondary;
 
   /// Hint / placeholder text inside inputs.
-  static const Color textHint = Color(0xFFBDBDBD);
+  static Color get textHint => LimboConfiguration().textHint;
 
   // ── Grays ─────────────────────────────────────────────────────────────────
 
   /// Icon default colour.
-  static const Color icons = Color(0xFF9C9C9C);
+  static Color get icons => LimboConfiguration().icons;
 
   /// Light divider / skeleton / disabled surface.
-  static const Color lightGray = Color(0xFFDEE1E1);
+  static Color get lightGray => LimboConfiguration().lightGray;
 
   /// Mid-range gray — input borders, unselected items.
-  static const Color gray = Color(0xFFBDBDBD);
+  static Color get gray => LimboConfiguration().gray;
 
   /// Muted text — timestamps, captions.
-  static const Color darkerText = Color(0xFF828282);
+  static Color get darkerText => LimboConfiguration().darkerText;
 
   /// Normal gray — placeholders, empty states.
-  static const Color normalGray = Color(0xFFD9D9D9);
+  static Color get normalGray => LimboConfiguration().normalGray;
 
   /// Dark gray — secondary icons, subdued text.
-  static const Color darkGray = Color(0xFFA4A4A4);
+  static Color get darkGray => LimboConfiguration().darkGray;
 
   // ── Utility ───────────────────────────────────────────────────────────────
 
   /// Pure black reference.
-  static const Color black = Color(0xFF000000);
+  static Color get black => LimboConfiguration().black;
 
   /// Pure white reference.
-  static const Color white = Color(0xFFFFFFFF);
+  static Color get white => LimboConfiguration().white;
 
   /// Success green — price display, confirmation states.
-  static const Color success = Color(0xFF4CAF50);
+  static Color get success => LimboConfiguration().success;
 
   /// Error / discount strikethrough red.
-  static const Color error = Color(0xFFF44336);
+  static Color get error => LimboConfiguration().error;
 
   // ── Disabled state ────────────────────────────────────────────────────────
 
   /// Default disabled button/control background.
-  static const Color disabled = Color(0xFFBDBDBD);
+  static Color get disabled => LimboConfiguration().disabled;
 
   /// Text colour on top of a disabled surface.
-  static const Color disabledText = Color(0xFF9E9E9E);
+  static Color get disabledText => LimboConfiguration().disabledText;
 }

@@ -81,7 +81,7 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
       viewBackgroundColor: Colors.white,
       viewHintText: '',
       headerTextStyle: const TextStyle(color: Colors.black),
-      headerHintStyle: const TextStyle(color: LimboColors.icons),
+      headerHintStyle: TextStyle(color: LimboColors.icons),
       dividerColor: Colors.transparent,
       viewShape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.zero,
@@ -93,16 +93,16 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
           padding: const WidgetStatePropertyAll(
               EdgeInsets.only(right: 0, left: 16)),
           backgroundColor:
-              const WidgetStatePropertyAll(LimboColors.backgroundObject),
+              WidgetStatePropertyAll(LimboColors.backgroundObject),
           elevation: const WidgetStatePropertyAll(0),
           hintText: widget.hintText,
-          hintStyle: const WidgetStatePropertyAll(
+          hintStyle: WidgetStatePropertyAll(
               TextStyle(color: LimboColors.icons)),
           trailing: [
             Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: LimboColors.primary,
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   bottomRight: Radius.circular(30),
                   topRight: Radius.circular(30),
                 ),
@@ -132,7 +132,7 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
       },
       viewLeading: IconButton(
         icon: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: LimboColors.primary,
             shape: BoxShape.circle,
           ),
@@ -144,9 +144,9 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
       viewTrailing: [
         Container(
           margin: const EdgeInsets.only(right: 16),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: LimboColors.primary,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
           ),
           child: IconButton(
             onPressed: () => _handleSearch(_searchController.text),
@@ -173,8 +173,8 @@ class _RecentSearchesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (recentSearches.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(24),
+      return Padding(
+        padding: const EdgeInsets.all(24),
         child: Center(
           child: Text(
             'Sin b\u00fasquedas recientes',
@@ -195,7 +195,7 @@ class _RecentSearchesView extends StatelessWidget {
         ),
         ...recentSearches.map(
           (term) => ListTile(
-            leading: const Icon(Icons.history, color: LimboColors.icons),
+            leading: Icon(Icons.history, color: LimboColors.icons),
             title: Text(term),
             trailing: IconButton(
               icon: const Icon(Icons.close, size: 18),

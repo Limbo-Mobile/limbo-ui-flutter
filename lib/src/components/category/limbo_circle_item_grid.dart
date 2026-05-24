@@ -46,7 +46,7 @@ class LimboCircleItemGrid extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: LimboColors.backgroundObjectBorder,
               shape: BoxShape.circle,
             ),

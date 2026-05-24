@@ -66,11 +66,11 @@ class LimboFormField extends StatelessWidget {
             const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
         enabledBorder: OutlineInputBorder(
           borderSide:
-              const BorderSide(color: LimboColors.backgroundObjectBorder),
+              BorderSide(color: LimboColors.backgroundObjectBorder),
           borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: LimboColors.primary, width: 1.0),
+          borderSide: BorderSide(color: LimboColors.primary, width: 1.0),
           borderRadius: BorderRadius.circular(12),
         ),
         errorBorder: OutlineInputBorder(
@@ -84,7 +84,7 @@ class LimboFormField extends StatelessWidget {
         suffixIcon: suffixIcon,
         prefixIcon: Container(
           margin: const EdgeInsets.only(right: 8, top: 8, bottom: 8),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(right: BorderSide(color: LimboColors.gray)),
           ),
           child: Icon(icon, color: LimboColors.primary),

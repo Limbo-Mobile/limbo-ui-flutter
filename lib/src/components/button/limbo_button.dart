@@ -29,8 +29,8 @@ class LimboButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Widget child;
   final double widthSize;
-  final Color backgroundColor;
-  final Color disabledColor;
+  final Color? backgroundColor;
+  final Color? disabledColor;
   final Color loadingIndicatorColor;
   final bool disabled;
   final bool isLoading;
@@ -42,8 +42,8 @@ class LimboButton extends StatelessWidget {
     required this.onPressed,
     required this.child,
     this.widthSize = double.infinity,
-    this.backgroundColor = LimboColors.primary,
-    this.disabledColor = const Color(0xFFBDBDBD),
+    this.backgroundColor,
+    this.disabledColor,
     this.loadingIndicatorColor = Colors.white,
     this.disabled = false,
     this.isLoading = false,
@@ -61,11 +61,14 @@ class LimboButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = backgroundColor ?? LimboColors.primary;
+    final dbColor = disabledColor ?? LimboColors.disabled;
+
     Widget button = ElevatedButton(
       onPressed: _isInteractive ? _handlePress : null,
       style: ElevatedButton.styleFrom(
-        backgroundColor: disabled ? disabledColor : backgroundColor,
-        disabledBackgroundColor: disabledColor,
+        backgroundColor: disabled ? dbColor : bgColor,
+        disabledBackgroundColor: dbColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),

@@ -18,7 +18,7 @@ class LimboOptionsTitle extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Expanded(
+        Expanded(
           child: Divider(
             color: LimboColors.primary,
             thickness: 1,
@@ -27,7 +27,7 @@ class LimboOptionsTitle extends StatelessWidget {
           ),
         ),
         Text(name, style: LimboTypography.sectionTitle, textAlign: TextAlign.center),
-        const Expanded(
+        Expanded(
           child: Divider(
             color: LimboColors.primary,
             thickness: 1,
