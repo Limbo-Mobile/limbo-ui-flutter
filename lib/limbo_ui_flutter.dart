@@ -14,7 +14,6 @@ export 'src/core/limbo_validators.dart';
 export 'src/core/limbo_configuration.dart';
 export 'src/core/limbo_typography.dart';
 
-
 // ── Button ────────────────────────────────────────────────────────────────────
 export 'src/components/button/limbo_button.dart';
 export 'src/components/button/limbo_category_button.dart';
@@ -22,6 +21,7 @@ export 'src/components/button/limbo_category_button.dart';
 // ── Navigation ────────────────────────────────────────────────────────────────
 // Exports: LimboTabBar, LimboTabItem
 export 'src/components/navigation/limbo_home_tab_bar.dart';
+export 'src/components/navigation/limbo_liquid_glass_navigation_bar.dart';
 
 // ── AppBar ────────────────────────────────────────────────────────────────────
 export 'src/components/app_bar/limbo_app_bar.dart';
