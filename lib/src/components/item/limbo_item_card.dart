@@ -70,8 +70,16 @@ class LimboItemCard extends StatelessWidget {
                   topLeft: Radius.circular(_radius),
                 ),
                 child: Image(
-                  image: ResizeImage(item.image, width: 400),
+                  image: item.image,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: const Color(0xFFF0F0F0),
+                    child: const Icon(
+                      Icons.image_not_supported_outlined,
+                      color: Color(0xFFBBBBBB),
+                      size: 40,
+                    ),
+                  ),
                 ),
               ),
             ),
