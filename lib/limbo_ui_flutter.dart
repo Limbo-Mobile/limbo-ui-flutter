@@ -48,3 +48,16 @@ export 'src/components/picker/limbo_color_picker.dart';
 
 // ── Search ────────────────────────────────────────────────────────────────────
 export 'src/components/search/limbo_search_widget.dart';
+
+// ── API Service Layer ─────────────────────────────────────────────────────────
+export 'src/services/api/api_service.dart';
+export 'src/services/api/dio_client.dart';
+export 'src/services/api/models/api_exception.dart';
+export 'src/services/api/models/multipart_file_data.dart';
+export 'src/services/api/utils/api_error_handler.dart';
+export 'src/services/api/utils/api_logger.dart';
+export 'src/services/api/utils/api_response_handler.dart';
+export 'src/services/api/interceptors/auth_interceptor.dart';
+export 'src/services/api/interceptors/logging_interceptor.dart';
+export 'src/services/api/repositories/http_repository.dart';
+export 'src/services/api/repositories/multipart_repository.dart';

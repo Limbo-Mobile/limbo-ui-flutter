@@ -6,16 +6,6 @@ import 'package:limbo_ui_flutter/src/core/limbo_colors.dart';
 /// The widget manages suggestions internally. Persistence of recent searches
 /// is handled externally via [recentSearches], [onSearch], and
 /// [onRemoveRecentSearch] callbacks.
-///
-/// ```dart
-/// LimboSearchWidget(
-///   recentSearches: _recents,
-///   allProducts: ['Camisa azul', 'Pantalón jean'],
-///   onSearch: (q) async { await repo.save(q); setState(() {}); },
-///   onRemoveRecentSearch: (q) async { await repo.remove(q); setState(() {}); },
-///   onBack: () => Navigator.pop(context),
-/// )
-/// ```
 class LimboSearchWidget extends StatefulWidget {
   final List<String> recentSearches;
   final List<String> allProducts;
@@ -31,7 +21,7 @@ class LimboSearchWidget extends StatefulWidget {
     required this.onSearch,
     required this.onRemoveRecentSearch,
     this.onBack,
-    this.hintText = '\u00bfQu\u00e9 est\u00e1s buscando?',
+    this.hintText = '¿Qué estás buscando?',
   });
 
   @override
@@ -40,18 +30,29 @@ class LimboSearchWidget extends StatefulWidget {
 
 class _LimboSearchWidgetState extends State<LimboSearchWidget> {
   final SearchController _searchController = SearchController();
+  late final ValueNotifier<List<String>> _recentNotifier;
   List<String> _suggestions = [];
 
   @override
   void initState() {
     super.initState();
+    _recentNotifier = ValueNotifier(List.from(widget.recentSearches));
     _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void didUpdateWidget(LimboSearchWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.recentSearches != widget.recentSearches) {
+      _recentNotifier.value = List.from(widget.recentSearches);
+    }
   }
 
   @override
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    _recentNotifier.dispose();
     super.dispose();
   }
 
@@ -71,7 +72,13 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
   Future<void> _handleSearch(String query) async {
     if (query.trim().isEmpty) return;
     await widget.onSearch(query);
-    _searchController.closeView(query);
+    // Clear text so bar is fresh when user returns
+    _searchController.closeView('');
+  }
+
+  Future<void> _handleRemove(String term) async {
+    _recentNotifier.value = List.from(_recentNotifier.value)..remove(term);
+    await widget.onRemoveRecentSearch(term);
   }
 
   @override
@@ -117,10 +124,13 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
       suggestionsBuilder: (context, controller) {
         if (controller.text.isEmpty) {
           return [
-            _RecentSearchesView(
-              recentSearches: widget.recentSearches,
-              onSearch: _handleSearch,
-              onRemove: widget.onRemoveRecentSearch,
+            ValueListenableBuilder<List<String>>(
+              valueListenable: _recentNotifier,
+              builder: (_, recents, __) => _RecentSearchesView(
+                recentSearches: recents,
+                onSearch: _handleSearch,
+                onRemove: _handleRemove,
+              ),
             ),
           ];
         }
@@ -177,7 +187,7 @@ class _RecentSearchesView extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Center(
           child: Text(
-            'Sin b\u00fasquedas recientes',
+            'Escribe algo para buscar',
             style: TextStyle(color: LimboColors.gray),
           ),
         ),

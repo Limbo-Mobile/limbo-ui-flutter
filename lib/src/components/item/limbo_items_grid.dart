@@ -21,6 +21,7 @@ class LimboItemsGrid extends StatelessWidget {
   final double crossAxisSpacing;
   final double itemHeight;
   final EdgeInsetsGeometry padding;
+  final ScrollPhysics? physics;
 
   const LimboItemsGrid({
     super.key,
@@ -31,11 +32,13 @@ class LimboItemsGrid extends StatelessWidget {
     this.crossAxisSpacing = 10,
     this.itemHeight = 320,
     this.padding = const EdgeInsets.symmetric(vertical: 10),
+    this.physics,
   });
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      physics: physics,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
         mainAxisSpacing: mainAxisSpacing,
