@@ -43,6 +43,9 @@ export 'src/components/category/limbo_order_widget.dart';
 export 'src/components/item/limbo_item_card.dart';
 export 'src/components/item/limbo_items_grid.dart';
 
+// ── Filter ────────────────────────────────────────────────────────────────────
+export 'src/components/filter/limbo_segmented_control.dart';
+
 // ── Picker ────────────────────────────────────────────────────────────────────
 export 'src/components/picker/limbo_color_picker.dart';
 
