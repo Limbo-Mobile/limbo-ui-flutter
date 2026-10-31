@@ -16,6 +16,9 @@ import 'package:limbo_ui_flutter/src/components/item/limbo_item_card.dart';
 class LimboItemsGrid extends StatelessWidget {
   final List<LimboItemData> items;
   final void Function(LimboItemData item)? onItemTap;
+
+  /// When set, every card shows a heart toggle that reports its item here.
+  final void Function(LimboItemData item)? onFavoriteToggle;
   final int crossAxisCount;
   final double mainAxisSpacing;
   final double crossAxisSpacing;
@@ -27,6 +30,7 @@ class LimboItemsGrid extends StatelessWidget {
     super.key,
     required this.items,
     this.onItemTap,
+    this.onFavoriteToggle,
     this.crossAxisCount = 2,
     this.mainAxisSpacing = 10,
     this.crossAxisSpacing = 10,
@@ -51,6 +55,9 @@ class LimboItemsGrid extends StatelessWidget {
         return LimboItemCard(
           item: items[index],
           onTap: () => onItemTap?.call(items[index]),
+          onFavoriteToggle: onFavoriteToggle == null
+              ? null
+              : () => onFavoriteToggle!(items[index]),
         );
       },
     );

@@ -1,23 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:limbo_ui_flutter/src/components/image/limbo_network_image.dart';
+import 'package:limbo_ui_flutter/src/components/misc/limbo_favorite_button.dart';
+import 'package:limbo_ui_flutter/src/components/motion/limbo_pressable.dart';
 import 'package:limbo_ui_flutter/src/core/limbo_configuration.dart';
 
 /// Data model for a product displayed in [LimboItemCard].
 class LimboItemData {
+  /// Caller-defined identity (e.g. product id) echoed back by tap callbacks.
+  final Object? id;
+  final bool isFavorite;
   final String storeName;
   final String productName;
-  final ImageProvider image;
+
+  /// Local/asset image. Provide this or [imageUrl].
+  final ImageProvider? image;
+
+  /// Remote image, rendered with [LimboNetworkImage] (shimmer + fade-in).
+  final String? imageUrl;
   final double price;
   final double discount; // 0.0 = no discount, else multiplied by price
   final List<Map<String, dynamic>> colors; // {'color': Color, 'label': String}
 
   const LimboItemData({
+    this.id,
+    this.isFavorite = false,
     required this.storeName,
     required this.productName,
-    required this.image,
+    this.image,
+    this.imageUrl,
     required this.price,
     this.discount = 0.0,
     this.colors = const [],
-  });
+  }) : assert(
+          image != null || imageUrl != null,
+          'LimboItemData needs image or imageUrl',
+        );
 }
 
 /// An e-commerce product card matching Limbo 2024 Figma specs.
@@ -38,14 +55,23 @@ class LimboItemCard extends StatelessWidget {
   final LimboItemData item;
   final VoidCallback? onTap;
 
+  /// When set, a heart toggle is overlaid on the image.
+  final VoidCallback? onFavoriteToggle;
+
   static const double _radius = 16.0;
 
-  const LimboItemCard({super.key, required this.item, this.onTap});
+  const LimboItemCard({
+    super.key,
+    required this.item,
+    this.onTap,
+    this.onFavoriteToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return LimboPressable(
       onTap: onTap,
+      pressedScale: 0.98,
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -64,23 +90,40 @@ class LimboItemCard extends StatelessWidget {
           children: [
             // Top Image
             Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(_radius),
-                  topLeft: Radius.circular(_radius),
-                ),
-                child: Image(
-                  image: item.image,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: const Color(0xFFF0F0F0),
-                    child: const Icon(
-                      Icons.image_not_supported_outlined,
-                      color: Color(0xFFBBBBBB),
-                      size: 40,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(_radius),
+                      topLeft: Radius.circular(_radius),
                     ),
+                    child: item.imageUrl != null
+                        ? LimboNetworkImage(item.imageUrl!, cacheWidth: 600)
+                        : Image(
+                            image: item.image!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                              color: const Color(0xFFF0F0F0),
+                              child: const Icon(
+                                Icons.image_not_supported_outlined,
+                                color: Color(0xFFBBBBBB),
+                                size: 40,
+                              ),
+                            ),
+                          ),
                   ),
-                ),
+                  if (onFavoriteToggle != null)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: LimboFavoriteButton(
+                        isFavorite: item.isFavorite,
+                        onToggle: onFavoriteToggle!,
+                      ),
+                    ),
+                ],
               ),
             ),
             const SizedBox(height: 12),
@@ -211,7 +254,7 @@ class _PriceDisplay extends StatelessWidget {
       child: Text(
         'S/.${price.toStringAsFixed(2)}',
         style: TextStyle(
-                  fontFamily: LimboConfiguration().fontFamily,
+          fontFamily: LimboConfiguration().fontFamily,
           fontSize: 16,
           fontWeight: FontWeight.bold,
           color: const Color(0xFFE60000), // Figma red
@@ -237,7 +280,7 @@ class _DiscountedPriceDisplay extends StatelessWidget {
           Text(
             'S/.${discounted.toStringAsFixed(2)}',
             style: TextStyle(
-                  fontFamily: LimboConfiguration().fontFamily,
+              fontFamily: LimboConfiguration().fontFamily,
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: const Color(0xFFE60000),
@@ -247,7 +290,7 @@ class _DiscountedPriceDisplay extends StatelessWidget {
           Text(
             'S/.${item.price.toStringAsFixed(2)}',
             style: TextStyle(
-                  fontFamily: LimboConfiguration().fontFamily,
+              fontFamily: LimboConfiguration().fontFamily,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF999999),

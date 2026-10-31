@@ -14,6 +14,10 @@ class LimboSearchWidget extends StatefulWidget {
   final VoidCallback? onBack;
   final String hintText;
 
+  /// Fires on every text change so the host can fetch remote suggestions
+  /// (debounce on the host side) and feed them back through [allProducts].
+  final ValueChanged<String>? onQueryChanged;
+
   const LimboSearchWidget({
     super.key,
     required this.recentSearches,
@@ -22,6 +26,7 @@ class LimboSearchWidget extends StatefulWidget {
     required this.onRemoveRecentSearch,
     this.onBack,
     this.hintText = '¿Qué estás buscando?',
+    this.onQueryChanged,
   });
 
   @override
@@ -46,6 +51,7 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
     if (oldWidget.recentSearches != widget.recentSearches) {
       _recentNotifier.value = List.from(widget.recentSearches);
     }
+    if (oldWidget.allProducts != widget.allProducts) _onSearchChanged();
   }
 
   @override
@@ -58,6 +64,7 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
 
   void _onSearchChanged() {
     final query = _searchController.text.toLowerCase();
+    widget.onQueryChanged?.call(_searchController.text);
     if (query.isEmpty) {
       if (mounted) setState(() => _suggestions = []);
       return;
