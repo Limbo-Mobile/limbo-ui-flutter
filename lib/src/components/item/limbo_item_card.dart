@@ -197,7 +197,7 @@ class LimboItemCard extends StatelessWidget {
               const SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: _ColorSelector(colors: item.colors),
+                child: _ColorSwatches(colors: item.colors),
               ),
             ],
             const SizedBox(height: 10),
@@ -208,51 +208,49 @@ class LimboItemCard extends StatelessWidget {
   }
 }
 
-class _ColorSelector extends StatefulWidget {
+/// Read-only swatches listing the colours a product comes in. They are
+/// informative only: picking a colour happens on the product page.
+class _ColorSwatches extends StatelessWidget {
   final List<Map<String, dynamic>> colors;
-  const _ColorSelector({required this.colors});
 
-  @override
-  State<_ColorSelector> createState() => _ColorSelectorState();
-}
+  static const int _maxVisible = 5;
 
-class _ColorSelectorState extends State<_ColorSelector> {
-  int _selected = 0;
+  const _ColorSwatches({required this.colors});
 
   @override
   Widget build(BuildContext context) {
-    // Custom inline swatches for the product card to match the small 18px circle spec
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(widget.colors.length, (index) {
-        final isSelected = _selected == index;
-        return GestureDetector(
-          onTap: () => setState(() => _selected = index),
-          child: Container(
-            margin: const EdgeInsets.only(right: 8),
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: isSelected ? Colors.black : Colors.transparent,
-                width: 1,
-              ),
-            ),
-            child: Container(
-              width: 18,
-              height: 18,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: widget.colors[index]['color'] as Color,
-                border: Border.all(
-                  color: const Color(0xFFEEEEEE),
-                  width: 1,
+    final visible = colors.take(_maxVisible).toList();
+    final hidden = colors.length - visible.length;
+
+    return Semantics(
+      label: 'Colores: ${colors.map((c) => c['label']).join(', ')}',
+      child: ExcludeSemantics(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final c in visible)
+              Container(
+                width: 14,
+                height: 14,
+                margin: const EdgeInsets.only(right: 6),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: c['color'] as Color,
+                  border: Border.all(color: const Color(0xFFDDDDDD)),
                 ),
               ),
-            ),
-          ),
-        );
-      }),
+            if (hidden > 0)
+              Text(
+                '+$hidden',
+                style: TextStyle(
+                  fontFamily: LimboConfiguration().fontFamily,
+                  fontSize: 10,
+                  color: const Color(0xFF828282),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

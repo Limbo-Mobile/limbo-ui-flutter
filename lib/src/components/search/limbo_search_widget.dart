@@ -34,6 +34,8 @@ class LimboSearchWidget extends StatefulWidget {
 }
 
 class _LimboSearchWidgetState extends State<LimboSearchWidget> {
+  static const double _barHeight = 48;
+
   final SearchController _searchController = SearchController();
   late final ValueNotifier<List<String>> _recentNotifier;
   List<String> _suggestions = [];
@@ -104,8 +106,12 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
       builder: (context, controller) {
         return SearchBar(
           controller: controller,
-          padding: const WidgetStatePropertyAll(
-              EdgeInsets.only(right: 0, left: 16)),
+          // Fixed height so the trailing button fills the bar edge to edge.
+          constraints: const BoxConstraints(
+            minHeight: _barHeight,
+            maxHeight: _barHeight,
+          ),
+          padding: const WidgetStatePropertyAll(EdgeInsets.only(left: 16)),
           backgroundColor:
               WidgetStatePropertyAll(LimboColors.backgroundObject),
           elevation: const WidgetStatePropertyAll(0),
@@ -114,15 +120,16 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
               TextStyle(color: LimboColors.icons)),
           trailing: [
             Container(
+              width: 56,
+              height: _barHeight,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: LimboColors.primary,
-                borderRadius: const BorderRadius.only(
-                  bottomRight: Radius.circular(30),
-                  topRight: Radius.circular(30),
+                borderRadius: const BorderRadius.horizontal(
+                  right: Radius.circular(_barHeight / 2),
                 ),
               ),
-              padding: const EdgeInsets.all(8),
-              child: const Icon(Icons.search, color: Colors.white, size: 28),
+              child: const Icon(Icons.search, color: Colors.white, size: 26),
             ),
           ],
           onTap: () => controller.openView(),

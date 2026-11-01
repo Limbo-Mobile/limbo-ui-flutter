@@ -18,6 +18,8 @@ export 'src/core/limbo_typography.dart';
 export 'src/components/button/limbo_button.dart';
 export 'src/components/button/limbo_category_button.dart';
 export 'src/components/button/limbo_category_card.dart';
+export 'src/components/button/limbo_back_button.dart';
+export 'src/components/button/limbo_category_circle.dart';
 export 'src/components/button/limbo_social_button.dart';
 
 // ── Navigation ────────────────────────────────────────────────────────────────
@@ -27,6 +29,7 @@ export 'src/components/navigation/limbo_liquid_glass_navigation_bar.dart';
 
 // ── AppBar ────────────────────────────────────────────────────────────────────
 export 'src/components/app_bar/limbo_app_bar.dart';
+export 'src/components/app_bar/limbo_page_header.dart';
 
 // ── Form ──────────────────────────────────────────────────────────────────────
 export 'src/components/form/limbo_form_field.dart';
