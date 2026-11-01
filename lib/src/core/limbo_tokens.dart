@@ -24,11 +24,13 @@ class LimboTokens {
   static const double rPill = 999;
 
   // ── Brand surfaces ────────────────────────────────────────────────────────
-  /// Deep teal-black used for hero surfaces and premium headings.
-  static const Color ink = Color(0xFF0C1F1F);
+  /// Near-black used for hero surfaces and premium headings.
+  static const Color ink = Color(0xFF1F1A1A);
 
-  /// Soft teal wash used as a tinted surface behind brand content.
-  static const Color tealWash = Color(0xFFEAF7F7);
+  /// Soft wash of the configured brand colour, used as a tinted surface
+  /// behind brand content.
+  static Color get brandWash =>
+      Color.alphaBlend(LimboColors.primary.withValues(alpha: 0.1), LimboColors.white);
 
   /// Warm champagne accent for badges, highlights and rewards.
   static const Color champagne = Color(0xFFE9C46A);

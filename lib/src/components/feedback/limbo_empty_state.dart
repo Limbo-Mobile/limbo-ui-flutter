@@ -34,8 +34,8 @@ class LimboEmptyState extends StatelessWidget {
               Container(
                 width: 84,
                 height: 84,
-                decoration: const BoxDecoration(
-                  color: LimboTokens.tealWash,
+                decoration: BoxDecoration(
+                  color: LimboTokens.brandWash,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, size: 38, color: LimboColors.primary),

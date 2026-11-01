@@ -81,7 +81,7 @@ class _LimboCodeInputState extends State<LimboCodeInput> {
                 height: 58,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: filled ? LimboTokens.tealWash : LimboColors.backgroundObject,
+                  color: filled ? LimboTokens.brandWash : LimboColors.backgroundObject,
                   borderRadius: BorderRadius.circular(LimboTokens.rSmall + 2),
                   border: Border.all(color: border, width: active ? 2 : 1),
                 ),

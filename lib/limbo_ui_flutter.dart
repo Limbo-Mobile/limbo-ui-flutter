@@ -17,6 +17,7 @@ export 'src/core/limbo_typography.dart';
 // ── Button ────────────────────────────────────────────────────────────────────
 export 'src/components/button/limbo_button.dart';
 export 'src/components/button/limbo_category_button.dart';
+export 'src/components/button/limbo_category_card.dart';
 export 'src/components/button/limbo_social_button.dart';
 
 // ── Navigation ────────────────────────────────────────────────────────────────

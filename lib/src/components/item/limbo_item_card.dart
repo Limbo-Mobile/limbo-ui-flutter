@@ -18,7 +18,7 @@ class LimboItemData {
   /// Remote image, rendered with [LimboNetworkImage] (shimmer + fade-in).
   final String? imageUrl;
   final double price;
-  final double discount; // 0.0 = no discount, else multiplied by price
+  final double discount; // fraction off (0.15 = 15% off); 0.0 = none
   final List<Map<String, dynamic>> colors; // {'color': Color, 'label': String}
 
   const LimboItemData({
@@ -58,7 +58,7 @@ class LimboItemCard extends StatelessWidget {
   /// When set, a heart toggle is overlaid on the image.
   final VoidCallback? onFavoriteToggle;
 
-  static const double _radius = 16.0;
+  static const double _radius = 6.0;
 
   const LimboItemCard({
     super.key,
@@ -77,11 +77,12 @@ class LimboItemCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(_radius),
+          border: Border.all(color: const Color(0xFFEFEFEF)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
             ),
           ],
         ),
@@ -126,67 +127,80 @@ class LimboItemCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
-            // Brand Name
+            const SizedBox(height: 10),
+            // Store Name
+            if (item.storeName.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  item.storeName,
+                  style: TextStyle(
+                    fontFamily: LimboConfiguration().fontFamily,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            const SizedBox(height: 2),
+            // Product Name
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
-                item.storeName.toUpperCase(),
+                item.productName,
                 style: TextStyle(
                   fontFamily: LimboConfiguration().fontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  letterSpacing: 0.5,
+                  fontSize: 13,
+                  color: const Color(0xFF555555),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(height: 4),
-            // Product Name
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                item.productName,
-                style: TextStyle(
-                  fontFamily: LimboConfiguration().fontFamily,
-                  fontSize: 14,
-                  color: const Color(0xFF666666),
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(height: 8),
             // Pricing
             if (item.discount == 0.0)
               _PriceDisplay(price: item.price)
             else
               _DiscountedPriceDisplay(item: item),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             // Vendor
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                'Vendido por ${item.storeName}',
-                style: TextStyle(
-                  fontFamily: LimboConfiguration().fontFamily,
-                  fontSize: 12,
-                  color: const Color(0xFF999999),
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(height: 12),
-            // Colors
-            if (item.colors.isNotEmpty)
+            if (item.storeName.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text.rich(
+                  TextSpan(
+                    text: 'Vendido por ',
+                    children: [
+                      TextSpan(
+                        text: item.storeName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  style: TextStyle(
+                    fontFamily: LimboConfiguration().fontFamily,
+                    fontSize: 10,
+                    color: const Color(0xFF828282),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            // Colors
+            if (item.colors.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: _ColorSelector(colors: item.colors),
               ),
-            const SizedBox(height: 12),
+            ],
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -250,12 +264,12 @@ class _PriceDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Text(
         'S/.${price.toStringAsFixed(2)}',
         style: TextStyle(
           fontFamily: LimboConfiguration().fontFamily,
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           color: const Color(0xFFE60000), // Figma red
         ),
@@ -270,9 +284,9 @@ class _DiscountedPriceDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final discounted = item.price * item.discount;
+    final discounted = item.price * (1 - item.discount);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
@@ -281,7 +295,7 @@ class _DiscountedPriceDisplay extends StatelessWidget {
             'S/.${discounted.toStringAsFixed(2)}',
             style: TextStyle(
               fontFamily: LimboConfiguration().fontFamily,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: const Color(0xFFE60000),
             ),

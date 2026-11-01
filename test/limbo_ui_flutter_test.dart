@@ -4,7 +4,7 @@ import 'package:limbo_ui_flutter/limbo_ui_flutter.dart';
 void main() {
   group('LimboColors', () {
     test('primary color has correct value', () {
-      expect(LimboColors.primary.toARGB32(), 0xFF19b4b3);
+      expect(LimboColors.primary.toARGB32(), 0xFFEC6A61);
     });
   });
 

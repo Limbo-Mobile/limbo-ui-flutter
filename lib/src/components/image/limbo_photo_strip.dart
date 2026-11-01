@@ -190,7 +190,7 @@ class _UploadingTile extends StatelessWidget {
       height: size,
       margin: const EdgeInsets.only(right: LimboTokens.s8),
       decoration: BoxDecoration(
-        color: LimboTokens.tealWash,
+        color: LimboTokens.brandWash,
         borderRadius: BorderRadius.circular(LimboTokens.rSmall + 2),
       ),
       alignment: Alignment.center,

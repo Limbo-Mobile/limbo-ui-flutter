@@ -17,11 +17,11 @@ class LimboColors {
 
   // ── Brand ─────────────────────────────────────────────────────────────────
 
-  /// Main brand teal. Used on primary buttons, active tabs, focused borders,
+  /// Main brand colour (coral by default). Used on primary buttons, active tabs, focused borders,
   /// selected color indicators, and all interactive highlights.
   static Color get primary => LimboConfiguration().primaryColor;
 
-  /// Darker teal. Used as pressed/hover state for [primary].
+  /// Darker brand shade. Used as pressed/hover state for [primary].
   static Color get secondary => LimboConfiguration().secondaryColor;
 
   // ── Backgrounds ───────────────────────────────────────────────────────────
