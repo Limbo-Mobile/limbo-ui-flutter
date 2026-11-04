@@ -28,14 +28,28 @@ class ApiErrorHandler {
         final statusCode = error.response?.statusCode;
         final data = error.response?.data;
 
+        final body = data is Map<String, dynamic> ? data : null;
+        final code = body?['code'] is String ? body!['code'] as String : null;
+
         if (statusCode == 422 && data != null) {
           final errors = _extractValidationErrors(data);
-          return ApiException(errors, statusCode: statusCode);
+          return ApiException(
+            errors,
+            statusCode: statusCode,
+            code: code,
+            body: body,
+          );
         }
 
+        // Prefer the backend's own (Spanish) message when it sent one.
+        final serverMessage = body?['message'];
         return ApiException(
-          _messageFromStatus(statusCode),
+          serverMessage is String && serverMessage.isNotEmpty
+              ? serverMessage
+              : _messageFromStatus(statusCode),
           statusCode: statusCode,
+          code: code,
+          body: body,
         );
       case DioExceptionType.cancel:
         return ApiException('Solicitud cancelada.');
@@ -44,7 +58,10 @@ class ApiErrorHandler {
           'Sin conexión a internet. Verifica tu red.',
           isNetworkError: true,
         );
+      // `unknown` plus newer Dio members (e.g. transformTimeout) fall here so
+      // the switch stays exhaustive across Dio versions.
       case DioExceptionType.unknown:
+      default:
         return ApiException(
           'Error inesperado. Inténtalo de nuevo.',
           isNetworkError: true,

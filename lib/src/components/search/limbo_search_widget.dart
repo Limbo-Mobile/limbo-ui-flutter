@@ -14,6 +14,10 @@ class LimboSearchWidget extends StatefulWidget {
   final VoidCallback? onBack;
   final String hintText;
 
+  /// Fires on every text change so the host can fetch remote suggestions
+  /// (debounce on the host side) and feed them back through [allProducts].
+  final ValueChanged<String>? onQueryChanged;
+
   const LimboSearchWidget({
     super.key,
     required this.recentSearches,
@@ -22,6 +26,7 @@ class LimboSearchWidget extends StatefulWidget {
     required this.onRemoveRecentSearch,
     this.onBack,
     this.hintText = '¿Qué estás buscando?',
+    this.onQueryChanged,
   });
 
   @override
@@ -29,6 +34,8 @@ class LimboSearchWidget extends StatefulWidget {
 }
 
 class _LimboSearchWidgetState extends State<LimboSearchWidget> {
+  static const double _barHeight = 48;
+
   final SearchController _searchController = SearchController();
   late final ValueNotifier<List<String>> _recentNotifier;
   List<String> _suggestions = [];
@@ -46,6 +53,7 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
     if (oldWidget.recentSearches != widget.recentSearches) {
       _recentNotifier.value = List.from(widget.recentSearches);
     }
+    if (oldWidget.allProducts != widget.allProducts) _onSearchChanged();
   }
 
   @override
@@ -58,6 +66,7 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
 
   void _onSearchChanged() {
     final query = _searchController.text.toLowerCase();
+    widget.onQueryChanged?.call(_searchController.text);
     if (query.isEmpty) {
       if (mounted) setState(() => _suggestions = []);
       return;
@@ -97,8 +106,12 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
       builder: (context, controller) {
         return SearchBar(
           controller: controller,
-          padding: const WidgetStatePropertyAll(
-              EdgeInsets.only(right: 0, left: 16)),
+          // Fixed height so the trailing button fills the bar edge to edge.
+          constraints: const BoxConstraints(
+            minHeight: _barHeight,
+            maxHeight: _barHeight,
+          ),
+          padding: const WidgetStatePropertyAll(EdgeInsets.only(left: 16)),
           backgroundColor:
               WidgetStatePropertyAll(LimboColors.backgroundObject),
           elevation: const WidgetStatePropertyAll(0),
@@ -107,15 +120,16 @@ class _LimboSearchWidgetState extends State<LimboSearchWidget> {
               TextStyle(color: LimboColors.icons)),
           trailing: [
             Container(
+              width: 56,
+              height: _barHeight,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: LimboColors.primary,
-                borderRadius: const BorderRadius.only(
-                  bottomRight: Radius.circular(30),
-                  topRight: Radius.circular(30),
+                borderRadius: const BorderRadius.horizontal(
+                  right: Radius.circular(_barHeight / 2),
                 ),
               ),
-              padding: const EdgeInsets.all(8),
-              child: const Icon(Icons.search, color: Colors.white, size: 28),
+              child: const Icon(Icons.search, color: Colors.white, size: 26),
             ),
           ],
           onTap: () => controller.openView(),

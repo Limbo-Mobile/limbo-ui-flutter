@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:limbo_ui_flutter/src/components/category/limbo_panel_header.dart';
 import 'package:limbo_ui_flutter/src/core/limbo_colors.dart';
+import 'package:limbo_ui_flutter/src/core/limbo_tokens.dart';
 import 'package:limbo_ui_flutter/src/core/limbo_typography.dart';
-import 'package:limbo_ui_flutter/src/components/category/limbo_options_title.dart';
 
 /// Data model for a color option inside [LimboFilterWidget].
 class LimboFilterColor {
@@ -28,7 +29,9 @@ class LimboFilterSection {
   });
 }
 
-/// A bottom-sheet style filter panel.
+/// Bottom-sheet filter panel: price range on top, one tab per
+/// [LimboFilterSection] (colour, size, ...) and a fixed footer with the clear
+/// and apply actions.
 ///
 /// All tabs, price range bounds, labels, and currency symbol are injected by
 /// the consuming app — the widget has no hardcoded data.
@@ -38,22 +41,20 @@ class LimboFilterSection {
 ///   selectedRange: const RangeValues(20, 500),
 ///   rangeMin: 20,
 ///   rangeMax: 500,
-///   selectedColor: null,
 ///   sections: [
 ///     LimboFilterSection(
 ///       label: 'Color',
-///       icon: Icons.color_lens,
+///       icon: Icons.palette_outlined,
 ///       content: LimboColorFilterGrid(
 ///         colors: myColors,
 ///         selectedColor: _color,
 ///         onColorChanged: (c) => setState(() => _color = c),
 ///       ),
 ///     ),
-///     LimboFilterSection(label: 'Talla', icon: Icons.straighten),
 ///   ],
 ///   onRangeChanged: (v) => setState(() => _range = v),
 ///   onApply: () => Navigator.pop(context),
-///   onClear: () => setState(() { _range = const RangeValues(20, 500); }),
+///   onClear: () => setState(() => _range = const RangeValues(20, 500)),
 /// )
 /// ```
 class LimboFilterWidget extends StatefulWidget {
@@ -79,11 +80,11 @@ class LimboFilterWidget extends StatefulWidget {
     this.rangeMax = 1000,
     this.onApply,
     this.onClear,
-    this.title = 'FILTRAR',
-    this.priceLabel = 'Escala de Precios',
-    this.currencySymbol = 'S/.',
-    this.applyLabel = 'Aplicar',
-    this.clearLabel = 'Limpiar',
+    this.title = 'Filtro de búsqueda',
+    this.priceLabel = 'Escala de precios',
+    this.currencySymbol = 'S/',
+    this.applyLabel = 'Aplicar filtros',
+    this.clearLabel = 'Limpiar filtros',
   });
 
   @override
@@ -91,118 +92,198 @@ class LimboFilterWidget extends StatefulWidget {
 }
 
 class _LimboFilterWidgetState extends State<LimboFilterWidget> {
-  late RangeValues _rangeValues;
+  late RangeValues _rangeValues = widget.selectedRange;
 
   @override
-  void initState() {
-    super.initState();
-    _rangeValues = widget.selectedRange;
+  void didUpdateWidget(LimboFilterWidget old) {
+    super.didUpdateWidget(old);
+    // The host resets the range on "clear"; follow it.
+    if (old.selectedRange != widget.selectedRange) {
+      _rangeValues = widget.selectedRange;
+    }
   }
+
+  String _price(double v) => '${widget.currencySymbol}${v.toInt()}';
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final height = limboPanelHeight(context);
     final divisions =
         (widget.rangeMax - widget.rangeMin).clamp(1, double.infinity).toInt();
 
     return DefaultTabController(
       length: widget.sections.length,
-      child: Container(
-        height: size.height * 0.7,
-        margin: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 30),
-            LimboOptionsTitle(name: widget.title),
-            const SizedBox(height: 30),
-            Text(
-              widget.priceLabel,
-              style: LimboTypography.filterSectionHeading,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${widget.currencySymbol}${_rangeValues.start.toInt()}',
-                    style: LimboTypography.filterLabel,
-                  ),
-                  Text(
-                    '${widget.currencySymbol}${_rangeValues.end.toInt()}',
-                    style: LimboTypography.filterLabel,
-                  ),
-                ],
+      child: Material(
+        color: LimboColors.white,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(LimboTokens.rLarge),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: SizedBox(
+          height: height,
+          child: Column(
+            children: [
+              LimboPanelHeader(title: widget.title),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  LimboTokens.s24,
+                  LimboTokens.s20,
+                  LimboTokens.s24,
+                  0,
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      widget.priceLabel,
+                      style: LimboTypography.filterSectionHeading,
+                    ),
+                    const SizedBox(height: LimboTokens.s12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _price(_rangeValues.start),
+                          style: LimboTypography.filterLabel,
+                        ),
+                        Text(
+                          _price(_rangeValues.end),
+                          style: LimboTypography.filterLabel,
+                        ),
+                      ],
+                    ),
+                    SliderTheme(
+                      data: SliderThemeData(
+                        trackHeight: 2,
+                        activeTrackColor: LimboColors.primary,
+                        inactiveTrackColor: LimboColors.lightGray,
+                        thumbColor: LimboColors.white,
+                        overlayColor: LimboColors.primary.withValues(alpha: 0.12),
+                        rangeThumbShape: const RoundRangeSliderThumbShape(
+                          enabledThumbRadius: 10,
+                          elevation: 2,
+                        ),
+                      ),
+                      child: RangeSlider(
+                        values: _rangeValues,
+                        min: widget.rangeMin,
+                        max: widget.rangeMax,
+                        divisions: divisions,
+                        onChanged: (v) {
+                          setState(() => _rangeValues = v);
+                          widget.onRangeChanged(v);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SliderTheme(
-              data: SliderThemeData(
-                trackHeight: 0.4,
-                activeTrackColor: LimboColors.black,
-                inactiveTrackColor: Colors.blueGrey,
-                thumbColor: Colors.white,
-                overlayColor: Colors.white.withAlpha(10),
-                rangeThumbShape:
-                    const RoundRangeSliderThumbShape(enabledThumbRadius: 9),
-              ),
-              child: RangeSlider(
-                values: _rangeValues,
-                min: widget.rangeMin,
-                max: widget.rangeMax,
-                divisions: divisions,
-                onChanged: (v) {
-                  setState(() => _rangeValues = v);
-                  widget.onRangeChanged(v);
-                },
-              ),
-            ),
-            // Dynamic tab headers
-            TabBar(
-              labelColor: LimboColors.primary,
-              unselectedLabelColor: Colors.black,
-              indicatorColor: LimboColors.primary,
-              splashFactory: NoSplash.splashFactory,
-              tabs: widget.sections
-                  .map((s) => Tab(text: s.label, icon: Icon(s.icon)))
-                  .toList(),
-            ),
-            // Dynamic tab bodies
-            Expanded(
-              child: TabBarView(
-                children: widget.sections
-                    .map((s) => s.content ?? const SizedBox.shrink())
+              TabBar(
+                labelColor: LimboColors.primary,
+                unselectedLabelColor: LimboColors.black,
+                indicatorColor: LimboColors.primary,
+                dividerColor: LimboTokens.hairline,
+                splashFactory: NoSplash.splashFactory,
+                labelStyle:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                unselectedLabelStyle:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                tabs: widget.sections
+                    .map((s) => Tab(
+                          text: s.label,
+                          icon: Icon(s.icon, size: 22),
+                          iconMargin: const EdgeInsets.only(bottom: 4),
+                        ))
                     .toList(),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _ActionIcon(
-                  icon: Icons.check,
-                  label: widget.applyLabel,
-                  onTap: widget.onApply,
+              Expanded(
+                child: TabBarView(
+                  children: widget.sections
+                      .map((s) => s.content ?? const SizedBox.shrink())
+                      .toList(),
                 ),
-                const SizedBox(width: 80),
-                _ActionIcon(
-                  icon: Icons.settings_backup_restore,
-                  label: widget.clearLabel,
-                  onTap: widget.onClear,
+              ),
+              Divider(height: 1, color: LimboTokens.hairline),
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(LimboTokens.s16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _FooterButton(
+                          label: widget.clearLabel,
+                          filled: false,
+                          onTap: widget.onClear,
+                        ),
+                      ),
+                      const SizedBox(width: LimboTokens.s12),
+                      Expanded(
+                        child: _FooterButton(
+                          label: widget.applyLabel,
+                          filled: true,
+                          onTap: widget.onApply,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
+class _FooterButton extends StatelessWidget {
+  final String label;
+  final bool filled;
+  final VoidCallback? onTap;
+
+  const _FooterButton({
+    required this.label,
+    required this.filled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(LimboTokens.rPill),
+    );
+    final text = Text(
+      label,
+      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+    );
+
+    return SizedBox(
+      height: 44,
+      child: filled
+          ? FilledButton(
+              onPressed: onTap,
+              style: FilledButton.styleFrom(
+                backgroundColor: LimboColors.primary,
+                foregroundColor: LimboColors.white,
+                shape: shape,
+              ),
+              child: text,
+            )
+          : OutlinedButton(
+              onPressed: onTap,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: LimboColors.primary,
+                side: BorderSide(color: LimboColors.primary),
+                shape: shape,
+              ),
+              child: text,
+            ),
+    );
+  }
+}
+
 // ---------------------------------------------------------------------------
-// Convenience sub-widget: color grid that can be passed as a section content
+// Convenience sub-widgets that can be passed as a section content
 // ---------------------------------------------------------------------------
 
 /// A grid of selectable color circles. Intended as [LimboFilterSection.content]
@@ -224,37 +305,47 @@ class LimboColorFilterGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      padding: const EdgeInsets.all(LimboTokens.s16),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
-        mainAxisExtent: 100,
+        mainAxisExtent: 84,
       ),
-      shrinkWrap: true,
       itemCount: colors.length,
       itemBuilder: (context, index) {
         final item = colors[index];
         final isSelected = item.color == selectedColor;
         return GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () => onColorChanged(item.color),
           child: Column(
             children: [
-              Container(
-                width: 30,
-                height: 30,
+              AnimatedContainer(
+                duration: LimboTokens.fast,
+                width: 40,
+                height: 40,
+                padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
-                  color: item.color,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color:
-                        isSelected ? LimboColors.primary : Colors.transparent,
+                    color: isSelected ? LimboColors.primary : Colors.transparent,
                     width: 2,
                   ),
                 ),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: item.color,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: LimboColors.lightGray),
+                  ),
+                ),
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 6),
               Text(
                 item.name,
                 style: LimboTypography.colorLabel,
                 textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -264,41 +355,79 @@ class LimboColorFilterGrid extends StatelessWidget {
   }
 }
 
-class _ActionIcon extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback? onTap;
+/// Wrap of outlined, toggleable chips (sizes, fits, materials). Intended as
+/// [LimboFilterSection.content].
+class LimboChipFilterGrid extends StatelessWidget {
+  final List<({int id, String label})> items;
+  final Set<int> selectedIds;
+  final ValueChanged<int> onToggle;
 
-  const _ActionIcon({required this.icon, required this.label, this.onTap});
+  const LimboChipFilterGrid({
+    super.key,
+    required this.items,
+    required this.selectedIds,
+    required this.onToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        GestureDetector(
-          onTap: onTap,
-          child: Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  spreadRadius: 1,
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(LimboTokens.s24),
+      child: Wrap(
+        spacing: LimboTokens.s12,
+        runSpacing: LimboTokens.s12,
+        children: [
+          for (final item in items)
+            _FilterChip(
+              label: item.label,
+              selected: selectedIds.contains(item.id),
+              onTap: () => onToggle(item.id),
             ),
-            child: Icon(icon, size: 30, color: Colors.black),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: LimboTokens.fast,
+        height: 36,
+        padding: const EdgeInsets.symmetric(horizontal: LimboTokens.s16),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: selected
+              ? LimboColors.primary.withValues(alpha: 0.08)
+              : LimboColors.white,
+          borderRadius: BorderRadius.circular(LimboTokens.rSmall),
+          border: Border.all(
+            color: selected ? LimboColors.primary : LimboColors.gray,
+            width: selected ? 1.5 : 1,
           ),
         ),
-        const SizedBox(height: 8),
-        Text(label, style: const TextStyle(color: Colors.black)),
-      ],
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+            color: selected ? LimboColors.primary : LimboColors.black,
+          ),
+        ),
+      ),
     );
   }
 }

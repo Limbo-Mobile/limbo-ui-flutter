@@ -22,7 +22,12 @@ class ApiLogger {
       ..writeln('│ Token: $maskedToken');
 
     if (options.data != null) {
-      buffer.writeln('│ Body: ${options.data}');
+      // Auth payloads carry passwords, codes and tokens: never print them.
+      buffer.writeln(
+        options.path.contains('/auth/')
+            ? '│ Body: <hidden>'
+            : '│ Body: ${options.data}',
+      );
     }
     buffer.write('└────────────────────────────────────────────');
 
@@ -36,7 +41,11 @@ class ApiLogger {
     final buffer = StringBuffer()
       ..writeln('┌── 📥 RESPONSE ─────────────────────────────')
       ..writeln('│ ${response.statusCode} ${response.requestOptions.uri}')
-      ..writeln('│ Data: ${response.data}')
+      ..writeln(
+        response.requestOptions.path.contains('/auth/')
+            ? '│ Data: <hidden>'
+            : '│ Data: ${response.data}',
+      )
       ..write('└────────────────────────────────────────────');
 
     final entry = buffer.toString();

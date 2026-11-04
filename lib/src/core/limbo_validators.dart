@@ -122,6 +122,17 @@ class LimboValidators {
   ///   LimboValidators.email,
   /// ]),
   /// ```
+  static final _phonePeRegex = RegExp(r'^9[0-9]{8}$');
+
+  /// Validates a Peruvian mobile number: exactly 9 digits starting with 9.
+  /// Empty values pass (the field is optional); combine with [required] if not.
+  static String? phonePe(String? value,
+      {String message = 'Ingresa un celular válido de 9 dígitos (9XXXXXXXX)'}) {
+    if (value == null || value.trim().isEmpty) return null;
+    if (!_phonePeRegex.hasMatch(value.trim())) return message;
+    return null;
+  }
+
   static String? Function(String?) compose(
     List<String? Function(String?)> validators,
   ) {

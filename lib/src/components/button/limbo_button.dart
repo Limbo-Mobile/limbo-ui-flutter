@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:limbo_ui_flutter/src/core/limbo_colors.dart';
+import 'package:limbo_ui_flutter/src/core/limbo_tokens.dart';
 
 /// A general-purpose elevated button with haptic feedback, tooltip,
 /// semantic label support, a [disabled] state, and an [isLoading] state.
@@ -70,9 +71,10 @@ class LimboButton extends StatelessWidget {
         backgroundColor: disabled ? dbColor : bgColor,
         disabledBackgroundColor: dbColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(LimboTokens.rMedium - 2),
         ),
-        minimumSize: Size(widthSize, 45),
+        elevation: 0,
+        minimumSize: Size(widthSize, 52),
       ),
       child: Semantics(
         label: semanticLabel,

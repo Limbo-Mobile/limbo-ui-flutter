@@ -10,10 +10,12 @@ class ApiResponseHandler {
       if (data is List) return {'data': data};
       return data as Map<String, dynamic>;
     }
-    final map = responseData as Map<String, dynamic>?;
+    final map = responseData is Map<String, dynamic> ? responseData : null;
     throw ApiException(
       map?['message'] as String? ?? 'Error del servidor',
       statusCode: statusCode,
+      code: map?['code'] as String?,
+      body: map,
     );
   }
 }

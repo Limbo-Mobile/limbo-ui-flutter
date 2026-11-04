@@ -1,23 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:limbo_ui_flutter/src/components/image/limbo_network_image.dart';
+import 'package:limbo_ui_flutter/src/components/misc/limbo_favorite_button.dart';
+import 'package:limbo_ui_flutter/src/components/motion/limbo_pressable.dart';
 import 'package:limbo_ui_flutter/src/core/limbo_configuration.dart';
 
 /// Data model for a product displayed in [LimboItemCard].
 class LimboItemData {
+  /// Caller-defined identity (e.g. product id) echoed back by tap callbacks.
+  final Object? id;
+  final bool isFavorite;
   final String storeName;
   final String productName;
-  final ImageProvider image;
+
+  /// Local/asset image. Provide this or [imageUrl].
+  final ImageProvider? image;
+
+  /// Remote image, rendered with [LimboNetworkImage] (shimmer + fade-in).
+  final String? imageUrl;
   final double price;
-  final double discount; // 0.0 = no discount, else multiplied by price
+  final double discount; // fraction off (0.15 = 15% off); 0.0 = none
   final List<Map<String, dynamic>> colors; // {'color': Color, 'label': String}
 
   const LimboItemData({
+    this.id,
+    this.isFavorite = false,
     required this.storeName,
     required this.productName,
-    required this.image,
+    this.image,
+    this.imageUrl,
     required this.price,
     this.discount = 0.0,
     this.colors = const [],
-  });
+  }) : assert(
+          image != null || imageUrl != null,
+          'LimboItemData needs image or imageUrl',
+        );
 }
 
 /// An e-commerce product card matching Limbo 2024 Figma specs.
@@ -38,24 +55,34 @@ class LimboItemCard extends StatelessWidget {
   final LimboItemData item;
   final VoidCallback? onTap;
 
-  static const double _radius = 16.0;
+  /// When set, a heart toggle is overlaid on the image.
+  final VoidCallback? onFavoriteToggle;
 
-  const LimboItemCard({super.key, required this.item, this.onTap});
+  static const double _radius = 6.0;
+
+  const LimboItemCard({
+    super.key,
+    required this.item,
+    this.onTap,
+    this.onFavoriteToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return LimboPressable(
       onTap: onTap,
+      pressedScale: 0.98,
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(_radius),
+          border: Border.all(color: const Color(0xFFEFEFEF)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
             ),
           ],
         ),
@@ -64,86 +91,116 @@ class LimboItemCard extends StatelessWidget {
           children: [
             // Top Image
             Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(_radius),
-                  topLeft: Radius.circular(_radius),
-                ),
-                child: Image(
-                  image: item.image,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: const Color(0xFFF0F0F0),
-                    child: const Icon(
-                      Icons.image_not_supported_outlined,
-                      color: Color(0xFFBBBBBB),
-                      size: 40,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(_radius),
+                      topLeft: Radius.circular(_radius),
                     ),
+                    child: item.imageUrl != null
+                        ? LimboNetworkImage(item.imageUrl!, cacheWidth: 600)
+                        : Image(
+                            image: item.image!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                              color: const Color(0xFFF0F0F0),
+                              child: const Icon(
+                                Icons.image_not_supported_outlined,
+                                color: Color(0xFFBBBBBB),
+                                size: 40,
+                              ),
+                            ),
+                          ),
                   ),
-                ),
+                  if (onFavoriteToggle != null)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: LimboFavoriteButton(
+                        isFavorite: item.isFavorite,
+                        onToggle: onFavoriteToggle!,
+                      ),
+                    ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            // Brand Name
+            const SizedBox(height: 10),
+            // Store Name
+            if (item.storeName.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  item.storeName,
+                  style: TextStyle(
+                    fontFamily: LimboConfiguration().fontFamily,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            const SizedBox(height: 2),
+            // Product Name
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
-                item.storeName.toUpperCase(),
+                item.productName,
                 style: TextStyle(
                   fontFamily: LimboConfiguration().fontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  letterSpacing: 0.5,
+                  fontSize: 13,
+                  color: const Color(0xFF555555),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(height: 4),
-            // Product Name
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                item.productName,
-                style: TextStyle(
-                  fontFamily: LimboConfiguration().fontFamily,
-                  fontSize: 14,
-                  color: const Color(0xFF666666),
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(height: 8),
             // Pricing
             if (item.discount == 0.0)
               _PriceDisplay(price: item.price)
             else
               _DiscountedPriceDisplay(item: item),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             // Vendor
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                'Vendido por ${item.storeName}',
-                style: TextStyle(
-                  fontFamily: LimboConfiguration().fontFamily,
-                  fontSize: 12,
-                  color: const Color(0xFF999999),
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(height: 12),
-            // Colors
-            if (item.colors.isNotEmpty)
+            if (item.storeName.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: _ColorSelector(colors: item.colors),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text.rich(
+                  TextSpan(
+                    text: 'Vendido por ',
+                    children: [
+                      TextSpan(
+                        text: item.storeName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  style: TextStyle(
+                    fontFamily: LimboConfiguration().fontFamily,
+                    fontSize: 10,
+                    color: const Color(0xFF828282),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            const SizedBox(height: 12),
+            // Colors
+            if (item.colors.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: _ColorSwatches(colors: item.colors),
+              ),
+            ],
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -151,51 +208,49 @@ class LimboItemCard extends StatelessWidget {
   }
 }
 
-class _ColorSelector extends StatefulWidget {
+/// Read-only swatches listing the colours a product comes in. They are
+/// informative only: picking a colour happens on the product page.
+class _ColorSwatches extends StatelessWidget {
   final List<Map<String, dynamic>> colors;
-  const _ColorSelector({required this.colors});
 
-  @override
-  State<_ColorSelector> createState() => _ColorSelectorState();
-}
+  static const int _maxVisible = 5;
 
-class _ColorSelectorState extends State<_ColorSelector> {
-  int _selected = 0;
+  const _ColorSwatches({required this.colors});
 
   @override
   Widget build(BuildContext context) {
-    // Custom inline swatches for the product card to match the small 18px circle spec
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(widget.colors.length, (index) {
-        final isSelected = _selected == index;
-        return GestureDetector(
-          onTap: () => setState(() => _selected = index),
-          child: Container(
-            margin: const EdgeInsets.only(right: 8),
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: isSelected ? Colors.black : Colors.transparent,
-                width: 1,
-              ),
-            ),
-            child: Container(
-              width: 18,
-              height: 18,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: widget.colors[index]['color'] as Color,
-                border: Border.all(
-                  color: const Color(0xFFEEEEEE),
-                  width: 1,
+    final visible = colors.take(_maxVisible).toList();
+    final hidden = colors.length - visible.length;
+
+    return Semantics(
+      label: 'Colores: ${colors.map((c) => c['label']).join(', ')}',
+      child: ExcludeSemantics(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final c in visible)
+              Container(
+                width: 14,
+                height: 14,
+                margin: const EdgeInsets.only(right: 6),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: c['color'] as Color,
+                  border: Border.all(color: const Color(0xFFDDDDDD)),
                 ),
               ),
-            ),
-          ),
-        );
-      }),
+            if (hidden > 0)
+              Text(
+                '+$hidden',
+                style: TextStyle(
+                  fontFamily: LimboConfiguration().fontFamily,
+                  fontSize: 10,
+                  color: const Color(0xFF828282),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -207,12 +262,12 @@ class _PriceDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Text(
         'S/.${price.toStringAsFixed(2)}',
         style: TextStyle(
-                  fontFamily: LimboConfiguration().fontFamily,
-          fontSize: 16,
+          fontFamily: LimboConfiguration().fontFamily,
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           color: const Color(0xFFE60000), // Figma red
         ),
@@ -227,9 +282,9 @@ class _DiscountedPriceDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final discounted = item.price * item.discount;
+    final discounted = item.price * (1 - item.discount);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
@@ -237,8 +292,8 @@ class _DiscountedPriceDisplay extends StatelessWidget {
           Text(
             'S/.${discounted.toStringAsFixed(2)}',
             style: TextStyle(
-                  fontFamily: LimboConfiguration().fontFamily,
-              fontSize: 16,
+              fontFamily: LimboConfiguration().fontFamily,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: const Color(0xFFE60000),
             ),
@@ -247,7 +302,7 @@ class _DiscountedPriceDisplay extends StatelessWidget {
           Text(
             'S/.${item.price.toStringAsFixed(2)}',
             style: TextStyle(
-                  fontFamily: LimboConfiguration().fontFamily,
+              fontFamily: LimboConfiguration().fontFamily,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF999999),

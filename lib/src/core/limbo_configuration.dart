@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 ///   LimboConfiguration().init(
 ///     fontFamily: 'Poppins',
 ///     colorsJson: {
-///       'primary': '#19B4B3',
+///       'primary': '#EC6A61',
 ///     },
 ///   );
 ///   runApp(const MyApp());
@@ -25,8 +25,8 @@ class LimboConfiguration with ChangeNotifier {
   String? _fontFamilyFallback;
 
   // Colors config
-  Color primaryColor = const Color(0xFF19B4B3);
-  Color secondaryColor = const Color(0xFF148584);
+  Color primaryColor = const Color(0xFFEC6A61);
+  Color secondaryColor = const Color(0xFFD4524A);
   Color backgroundApp = const Color(0xFFFFFFFF);
   Color backgroundObject = const Color(0xFFF6F6F6);
   Color backgroundObjectBorder = const Color(0xFFE8E8E8);
